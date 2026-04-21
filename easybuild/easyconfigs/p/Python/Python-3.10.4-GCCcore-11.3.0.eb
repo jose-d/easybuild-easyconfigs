@@ -10,7 +10,15 @@ toolchainopts = {'pic': True}
 
 source_urls = ['https://www.python.org/ftp/%(namelower)s/%(version)s/']
 sources = [SOURCE_TGZ]
-checksums = ['f3bcc65b1d5f1dc78675c746c98fcee823c038168fc629c5935b044d0911ad28']
+
+# Like patches, but these will only be applied if EasyBuild is configured to filter $LD_LIBRARY_PATH
+# In that scenario, ctypes needs to be patched since it heavily relies on $LD_LIBRARY_PATH to find libraries
+patch_ctypes_ld_library_path = 'Python-3.11.5-custom-ctypes.patch'
+
+checksums = [
+    {'Python-3.10.4.tgz': 'f3bcc65b1d5f1dc78675c746c98fcee823c038168fc629c5935b044d0911ad28'},
+    {'Python-3.11.5-custom-ctypes.patch': 'b29c22f47587460149e05296ff09b29bf790a83e2b3b13fb2f42f5f236ad8ea7'}
+]
 
 builddependencies = [
     ('UnZip', '6.0'),
@@ -32,13 +40,8 @@ dependencies = [
     ('OpenSSL', '1.1', '', SYSTEM),
 ]
 
-install_pip = True
-
 exts_default_options = {
-    'download_dep_fail': True,
-    'sanity_pip_check': True,
     'source_urls': [PYPI_SOURCE],
-    'use_pip': True,
 }
 
 # order is important!
@@ -99,14 +102,9 @@ exts_list = [
         'modulename': 'arff',
         'checksums': ['3220d0af6487c5aa71b47579be7ad1d94f3849ff1e224af3bf05ad49a0b5c4da'],
     }),
-    ('pycrypto', '2.6.1', {
-        'modulename': 'Crypto',
-        'patches': ['pycrypto-2.6.1_remove-usr-include.patch'],
-        'checksums': [
-            'f2ce1e989b272cfcb677616763e0a2e7ec659effa67a88aa92b3a65528f60a3c',  # pycrypto-2.6.1.tar.gz
-            # pycrypto-2.6.1_remove-usr-include.patch
-            '06c3d3bb290305e1360a023ea03f9281116c230de62382e6be9474996086712e',
-        ],
+    ('pycryptodome', '3.17', {
+        'modulename': 'Crypto.PublicKey.RSA',
+        'checksums': ['bce2e2d8e82fcf972005652371a3e8731956a0c1fbb719cc897943b3695ad91b'],
     }),
     ('ecdsa', '0.17.0', {
         'checksums': ['b9f500bb439e4153d0330610f5d26baaf18d17b8ced1bc54410d189385ea68aa'],
